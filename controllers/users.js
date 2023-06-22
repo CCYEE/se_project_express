@@ -1,16 +1,17 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const User = require("../models/user");
+
 
 
 const { itemError } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((e) => itemError(req, res, e));
-};
+// const getUsers = (req, res) => {
+//   User.find({})
+//     .then((users) => res.send(users))
+//     .catch((e) => itemError(req, res, e));
+// };
 
 const getCurrentUser = (req, res) => {
   const { _id } = req.params;
