@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const user = require("./user");
+const user = require("./users");
 const clothingItem = require("./clothingItem");
 const { ERROR_404 } = require("../utils/errors");
 

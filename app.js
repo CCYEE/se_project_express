@@ -1,22 +1,22 @@
-// PORT
 const { PORT = 3001 } = process.env;
-
-// Connect Express
 const express = require("express");
 
 const app = express();
-
-// mongoose connection
 const mongoose = require("mongoose");
+const routes = require("./routes");
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
-// mongoose connection
-const mongoose = require("mongoose");
+app.use((req, res, next) => {
+  req.user = {
+    _id: "6484cd87755ff5940b282596",
+  };
+  next();
+});
 
-mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
+app.use(express.json());
+app.use(routes);
 
-// Listener
 app.listen(PORT, () => {
   console.log(`App is listening on port: ${PORT}`);
 });
