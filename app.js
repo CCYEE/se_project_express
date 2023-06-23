@@ -11,11 +11,10 @@ const mongoose = require("mongoose");
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
-// Routes
-const routes = require("./routes");
+// mongoose connection
+const mongoose = require("mongoose");
 
-app.use(express.json());
-app.use(routes);
+mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
 // Listener
 app.listen(PORT, () => {
