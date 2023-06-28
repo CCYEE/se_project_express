@@ -1,7 +1,7 @@
 {
   "name": "se_project_express",
   "version": "1.0.0",
-  "description": "Back-end project for sprint 12",
+  "description": "Redo project 12 for sprint 12",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
