@@ -16,6 +16,15 @@ const createItem = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
+const deleteItem = (req, res) => {
+  const { itemsId } = req.params;
+
+  ClothingItem.findByIdAndDelete(itemsId)
+    .orFail()
+    .then((item) => res.send({ item }))
+    .catch((e) => itemError(req, res, e));
+};
+
 const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemsId,
@@ -38,13 +47,10 @@ const unlikeItem = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
-const deleteItem = (req, res) => {
-  const { itemsId } = req.params;
-
-  ClothingItem.findByIdAndDelete(itemsId)
-    .orFail()
-    .then((item) => res.send({ item }))
-    .catch((e) => itemError(req, res, e));
+module.exports = {
+  getItems,
+  createItem,
+  deleteItem,
+  likeItem,
+  unlikeItem,
 };
-
-module.exports = { getItems, createItem, likeItem, unlikeItem, deleteItem };
