@@ -25,8 +25,4 @@ const createUser = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
-module.exports = {
-  getUsers,
-  getUser,
-  createUser,
-};
+module.exports = { getUsers, getUser, createUser };

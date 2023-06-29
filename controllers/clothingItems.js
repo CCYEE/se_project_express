@@ -1,12 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 const { itemError } = require("../utils/errors");
 
-const getItems = (req, res) => {
-  ClothingItem.find({})
-    .then((items) => res.send(items))
-    .catch((e) => itemError(req, res, e));
-};
-
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
@@ -16,12 +10,9 @@ const createItem = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
-const deleteItem = (req, res) => {
-  const { itemsId } = req.params;
-
-  ClothingItem.findByIdAndDelete(itemsId)
-    .orFail()
-    .then((item) => res.send({ item }))
+const getItems = (req, res) => {
+  ClothingItem.find({})
+    .then((items) => res.send(items))
     .catch((e) => itemError(req, res, e));
 };
 
@@ -47,10 +38,13 @@ const unlikeItem = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
-module.exports = {
-  getItems,
-  createItem,
-  deleteItem,
-  likeItem,
-  unlikeItem,
+const deleteItem = (req, res) => {
+  const { itemsId } = req.params;
+
+  ClothingItem.findByIdAndDelete(itemsId)
+    .orFail()
+    .then((item) => res.send({ item }))
+    .catch((e) => itemError(req, res, e));
 };
+
+module.exports = { createItem, getItems, likeItem, unlikeItem, deleteItem };
