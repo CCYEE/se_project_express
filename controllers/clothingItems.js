@@ -1,5 +1,11 @@
 const ClothingItem = require("../models/clothingItem");
-const { itemError } = require("../utils/errors");
+const { itemError, ERROR_403 } = require("../utils/errors");
+
+const getItems = (req, res) => {
+  ClothingItem.find({})
+    .then((items) => res.send(items))
+    .catch((e) => itemError(req, res, e));
+};
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -10,9 +16,20 @@ const createItem = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
-const getItems = (req, res) => {
-  ClothingItem.find({})
-    .then((items) => res.send(items))
+const deleteItem = (req, res) => {
+  const { itemsId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findById(itemsId)
+    .orFail()
+    .then((item) => {
+      if (item.owner.equals(userId)) {
+        return item.remove(() => res.send({ item }));
+      }
+      return res
+        .status(ERROR_403)
+        .send({ message: "Not Authorized to delete" });
+    })
     .catch((e) => itemError(req, res, e));
 };
 
@@ -38,13 +55,10 @@ const unlikeItem = (req, res) => {
     .catch((e) => itemError(req, res, e));
 };
 
-const deleteItem = (req, res) => {
-  const { itemsId } = req.params;
-
-  ClothingItem.findByIdAndDelete(itemsId)
-    .orFail()
-    .then((item) => res.send({ item }))
-    .catch((e) => itemError(req, res, e));
+module.exports = {
+  getItems,
+  createItem,
+  deleteItem,
+  likeItem,
+  unlikeItem,
 };
-
-module.exports = { createItem, getItems, likeItem, unlikeItem, deleteItem };
