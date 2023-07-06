@@ -1,46 +1,29 @@
-const ERROR_CODES = {
-  BadRequest: 400,
-  Unauthorized: 401,
-  Forbidden: 403,
-  NotFound: 404,
-  AlreadyExistsError: 409,
-  DefaultError: 500,
-  MongoError: 11000,
-};
+const ERROR_400 = 400;
+const ERROR_401 = 401;
+const ERROR_403 = 403;
+const ERROR_404 = 404;
+const ERROR_409 = 409;
+const ERROR_500 = 500;
 
-const handleOnFailError = () => {
-  const error = new Error("No item found");
-  error.statusCode = 404;
-  throw error;
-};
-
-const handleError = (err, res) => {
-  if (err.name === "ValidationError" || err.name === "CastError") {
-    res
-      .status(ERROR_CODES.BadRequest)
-      .send({ message: "Bad Request, Invalid input" });
-  } else if (err.message === "Incorrect email or password") {
-    res
-      .status(ERROR_CODES.Unauthorized)
-      .send({ message: "You are not authorized to do this" });
-  } else if (err.statusCode === 404) {
-    res.status(ERROR_CODES.NotFound).send({ message: "Item not found" });
-  } else if (err.code === 11000) {
-    res
-      .status(ERROR_CODES.AlreadyExistsError)
-      .send({
-        message:
-          "Email address is already being used, please try another email.",
-      });
-  } else {
-    res
-      .status(ERROR_CODES.DefaultError)
-      .send({ message: "Something went wrong" });
+const itemError = (req, res, e) => {
+  if (e.name === "ValidationError") {
+    return res.status(ERROR_400).send({ message: "Invalid Data Input" });
   }
+  if (e.name === "CastError") {
+    return res.status(ERROR_400).send({ message: "Invalid ID" });
+  }
+  if (e.name === "DocumentNotFoundError") {
+    return res.status(ERROR_404).send({ message: "Error: Not Found" });
+  }
+  return res
+    .status(ERROR_500)
+    .send({ message: "An error has occured on the server" });
 };
 
 module.exports = {
-  ERROR_CODES,
-  handleOnFailError,
-  handleError,
+  ERROR_404,
+  ERROR_401,
+  ERROR_403,
+  ERROR_409,
+  itemError,
 };

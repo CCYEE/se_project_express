@@ -1,20 +1,22 @@
+const { PORT = 3001 } = process.env;
+
 const express = require("express");
-const cors = require("cors");
+
+const app = express();
+
 const mongoose = require("mongoose");
 
-const { PORT = 3001 } = process.env;
-const app = express();
-mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db", (r) => {
-  console.log("connected to DB", r);
-});
+mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
+
+const cors = require("cors");
+
+app.use(cors);
 
 const routes = require("./routes");
 
 app.use(express.json());
-app.use(cors());
 app.use(routes);
 
 app.listen(PORT, () => {
-  console.log(`App listening at port ${PORT}`);
-  console.log("This is working");
+  console.log(`App is listening on port: ${PORT}`);
 });
