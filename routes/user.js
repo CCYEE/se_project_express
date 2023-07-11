@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const { getCurrentUser, updateProfile } = require("../controllers/user");
-const auth = require("../middlewares/auth");
-
-// CRUD methods
+const auth = require("../middlewares/auths");
 
 router.get("/me", auth, getCurrentUser);
 router.patch("/me", auth, updateProfile);

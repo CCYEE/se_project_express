@@ -6,9 +6,7 @@ const {
   likeItem,
   unlikeItem,
 } = require("../controllers/clothingItem");
-const auth = require("../middlewares/auth");
-
-// CRUD methods
+const auth = require("../middlewares/auths");
 
 router.get("/", getItems);
 router.post("/", auth, createItem);
