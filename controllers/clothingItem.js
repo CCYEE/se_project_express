@@ -1,6 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
 const { itemError, ERROR_403 } = require("../utils/errors");
 
+// 400 e.name = ValidationError, CastError
+// 404 e.name = DocumentNotFoundError
+// 500 e.name = InternalServerError, defaultError
+
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))

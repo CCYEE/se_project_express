@@ -1,3 +1,11 @@
+/* 400 - invalid id or invalid data
+  404 - user/item does not exist or was sent to non-existent page
+  500 - default error */
+
+// 400 e.name = ValidationError, CastError
+// 404 e.name = DocumentNotFoundError
+// 500 e.name = InternalServerError, defaultError
+
 const ERROR_400 = 400;
 const ERROR_401 = 401;
 const ERROR_403 = 403;
