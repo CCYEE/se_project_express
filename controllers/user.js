@@ -3,58 +3,64 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
-const { itemError, ERROR_409, ERROR_401 } = require("../utils/errors");
-const { JWT_SECRET } = require("../utils/config");
+const { JWT_SECRET, NODE_ENV } = process.env;
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((e) => itemError(req, res, e));
-};
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const ConflictError = require("../errors/ConflictError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
-    .orFail()
+    .orFail(new NotFoundError("User not found"))
     .then((user) => res.send({ data: user }))
-    .catch((e) => itemError(req, res, e));
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => {
-      User.create({ name, avatar, email, password: hash })
-        .then((user) => res.send({ name, avatar, email: user.email }))
-        .catch((e) => {
-          console.error(e);
-          if (e.code === 11000) {
-            return res
-              .status(ERROR_409)
-              .send({ message: "User already exists" });
-          }
-
-          return itemError(req, res, e);
-        });
+  User.findOne({ email })
+    .then((existingUser) => {
+      if (existingUser) {
+        next(new ConflictError("Email already in use"));
+      }
     })
-    .catch((e) => itemError(req, res, e));
+    .then(() =>
+      bcrypt
+        .hash(password, 10)
+        .then((hash) =>
+          User.create({ name, avatar, email, password: hash }).then((user) =>
+            res.send({ name, avatar, email: user.email })
+          )
+        )
+    )
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return next(new BadRequestError("Invalid data sent to the server"));
+      }
+      return next(err);
+    });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) =>
       res.send({
-        token: jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" }),
+        token: jwt.sign(
+          { _id: user._id },
+          NODE_ENV === "production" ? JWT_SECRET : "super-secret-key",
+          { expiresIn: "7d" }
+        ),
       })
     )
-    .catch(() => res.status(ERROR_401).send({ message: "Unauthorized User" }));
+    .catch(() => next(new UnauthorizedError("Not authorized")));
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
   const userId = req.user._id;
 
@@ -63,13 +69,17 @@ const updateProfile = (req, res) => {
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .orFail()
+    .orFail(new NotFoundError("User not found"))
     .then((user) => res.send({ data: user }))
-    .catch((e) => itemError(req, res, e));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return next(new BadRequestError("Invalid data sent to server"));
+      }
+      return next(err);
+    });
 };
 
 module.exports = {
-  getUsers,
   getCurrentUser,
   createUser,
   login,
