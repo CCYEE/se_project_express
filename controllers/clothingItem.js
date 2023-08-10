@@ -18,7 +18,7 @@ const createItem = (req, res, next) => {
     .then((item) => res.send({ data: item }))
     .catch((e) => {
       if (e.name === "ValidationError") {
-        next(new BadRequestError("Invalid data passed to the server"));
+        return next(new BadRequestError("Invalid data passed to the server"));
       }
       return next(e);
     });
@@ -52,7 +52,7 @@ const likeItem = (req, res, next) => {
 
 const unlikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    req.params.itemsId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )

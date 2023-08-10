@@ -4,4 +4,4 @@ The back-end project is focused on creating a server for the WTWR application in
 
 -[Front-End Code](https://github.com/CCYEE/se_project_react)
 
--[Domain Deploy Address](https://mefekki.moonangel.com/) <-- Front and Back End Deployment
+-[Domain Deploy Address](api.mefekki.moonangel.com/) <-- Front and Back End Deployment

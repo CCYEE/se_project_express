@@ -15,6 +15,6 @@ router.get("/", getItems);
 router.post("/", auth, validateItem, createItem);
 router.put("/:itemsId/likes", auth, validateId, likeItem);
 router.delete("/:itemsId", auth, validateId, deleteItem);
-router.delete("/:itemId/likes", auth, validateId, unlikeItem);
+router.delete("/:itemsId/likes", auth, validateId, unlikeItem);
 
 module.exports = router;
